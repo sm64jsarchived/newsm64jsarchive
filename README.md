@@ -1,10 +1,7 @@
-# sm64jsarchive
+# sm64js
 
 ### Links
-[Original Website: sm64js.com](https://sm64js.com)
-
-
-Main Website: [NOT RELEASED YET](https://github.com/404)
+[Main Website: sm64js.com](https://sm64js.com)
 
 [Discord Server](https://discord.gg/7UaDnJt)
 
@@ -31,7 +28,8 @@ apk update && apk add git
 git clone https://github.com/sm64js/sm64js.git && cd sm64js
 
 # Install node packages, build, and serve
-npm run quickstart
+npm run build
+npm run serve
 ```
 You should now be able to access the website with the game from a web browser by typing "localhost" into the address bar.
 
