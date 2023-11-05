@@ -2,7 +2,9 @@
 
 ### Links
 [Original Website: sm64js.com](https://sm64js.com)
-[Main Website: [NOT RELEASED YET](https://github.com/404)
+
+
+[Original Website: [NOTRELEASEDYET](https://github.com/404.html)
 
 [Discord Server](https://discord.gg/7UaDnJt)
 
