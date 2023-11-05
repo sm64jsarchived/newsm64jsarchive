@@ -99,6 +99,8 @@ const update_walking_speed = (m) => {
     number16 = number16 < -32768 ? number16 + 65536 : number16
     m.faceAngle[1] = m.intendedYaw - approach_number(number16, 0, 0x800, 0x800)
 
+    m.forwardVel = 148
+
     apply_slope_accel(m)
 
 }
