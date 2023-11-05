@@ -4,7 +4,7 @@
 [Original Website: sm64js.com](https://sm64js.com)
 
 
-[Original Website: [NOTRELEASEDYET](https://github.com/404.html)
+Original Website: [NOTRELEASEDYET](https://github.com/404.html)
 
 [Discord Server](https://discord.gg/7UaDnJt)
 
