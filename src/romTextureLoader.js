@@ -76,6 +76,39 @@ import {
 
 import { yellow_sphere_seg5_texture_05000040 } from "./actors/yellow_sphere_small/model.inc"
 
+import { checkerboard_platform_seg8_texture_0800C840, checkerboard_platform_seg8_texture_0800CC40 } from "./actors/checkerboard_platform/model.inc"
+
+import { goomba_seg8_texture_08019530, goomba_seg8_texture_08019D30, goomba_seg8_texture_0801A530 } from "./actors/goomba/model.inc"
+
+import {
+    bobomb_seg8_texture_0801DA60,
+    bobomb_seg8_texture_0801EA60,
+    bobomb_seg8_texture_0801FA60,
+    bobomb_seg8_texture_08020A60,
+    bobomb_seg8_texture_08021A60,
+    bobomb_seg8_texture_08022260
+} from "./actors/bobomb/model.inc"
+
+import {
+    explosion_seg3_texture_03000A08,
+    explosion_seg3_texture_03001208,
+    explosion_seg3_texture_03001A08,
+    explosion_seg3_texture_03002208,
+    explosion_seg3_texture_03002A08,
+    explosion_seg3_texture_03003208,
+    explosion_seg3_texture_03003A08
+} from "./actors/explosion/model.inc"
+
+import {
+    smoke_seg4_texture_0401DEA0,
+    smoke_seg4_texture_0401E6A0,
+    smoke_seg4_texture_0401EEA0,
+    smoke_seg4_texture_0401F6A0,
+    smoke_seg4_texture_0401FEA0,
+    smoke_seg4_texture_040206A0,
+    smoke_seg4_texture_04020EA0
+} from "./actors/walk_smoke/model.inc"
+
 import {
     generic_09005800,
     generic_09006000,
@@ -156,8 +189,6 @@ import {
     snow_09009800
 } from "./textures/snow"
 
-
-
 import {
     grass_09000000,
     grass_09000800,
@@ -185,10 +216,26 @@ import {
     grass_0900B800
 } from "./textures/grass"
 
+import { chain_ball_seg6_texture_06020AE8 } from "./actors/chain_ball/model.inc"
+
+import {
+    chain_chomp_seg6_texture_060213D0,
+    chain_chomp_seg6_texture_06021BD0,
+    chain_chomp_seg6_texture_060223D0,
+    chain_chomp_seg6_texture_06022BD0,
+    chain_chomp_seg6_texture_060233D0
+} from "./actors/chain_chomp/model.inc"
+
+import { poundable_pole_seg6_texture_06001050, poundable_pole_seg6_texture_06001850 } from "./actors/poundable_pole/model.inc"
+
+import { dirt_seg3_texture_0302BDF8 } from "./actors/dirt/model.inc"
+import { mist_seg3_texture_03000080 } from "./actors/mist/model.inc"
+
+
 const url = new URL(window.location.href)
 const msgElement = document.getElementById('romMessage')
 let loadedGameAssets = false
-const textureVersion = 14
+const textureVersion = 22
 
 const loadDataIntoGame = (data) => {
 
@@ -377,6 +424,51 @@ const loadDataIntoGame = (data) => {
     texture_waterbox_water.push(...data["textures/segment2/segment2.11C58.rgba16.png"].data)
     texture_waterbox_lava.push(...data["textures/segment2/segment2.13C58.rgba16.png"].data)
 
+    checkerboard_platform_seg8_texture_0800C840.push(...data["actors/checkerboard_platform/checkerboard_platform_side.rgba16.png"].data)
+    checkerboard_platform_seg8_texture_0800CC40.push(...data["actors/checkerboard_platform/checkerboard_platform.rgba16.png"].data)
+
+    goomba_seg8_texture_08019530.push(...data["actors/goomba/goomba_body.rgba16.png"].data)
+    goomba_seg8_texture_08019D30.push(...data["actors/goomba/goomba_face.rgba16.png"].data)
+    goomba_seg8_texture_0801A530.push(...data["actors/goomba/goomba_face_blink.rgba16.png"].data)
+
+    bobomb_seg8_texture_0801DA60.push(...data["actors/bobomb/bob-omb_left_side.rgba16.png"].data)
+    bobomb_seg8_texture_0801EA60.push(...data["actors/bobomb/bob-omb_right_side.rgba16.png"].data)
+    bobomb_seg8_texture_0801FA60.push(...data["actors/bobomb/bob-omb_buddy_left_side.rgba16.png"].data)
+    bobomb_seg8_texture_08020A60.push(...data["actors/bobomb/bob-omb_buddy_right_side.rgba16.png"].data)
+    bobomb_seg8_texture_08021A60.push(...data["actors/bobomb/bob-omb_eyes.rgba16.png"].data)
+    bobomb_seg8_texture_08022260.push(...data["actors/bobomb/bob-omb_eyes_blink.rgba16.png"].data)
+
+    explosion_seg3_texture_03000A08.push(...data["actors/explosion/explosion_0.rgba16.png"].data)
+    explosion_seg3_texture_03001208.push(...data["actors/explosion/explosion_1.rgba16.png"].data)
+    explosion_seg3_texture_03001A08.push(...data["actors/explosion/explosion_2.rgba16.png"].data)
+    explosion_seg3_texture_03002208.push(...data["actors/explosion/explosion_3.rgba16.png"].data)
+    explosion_seg3_texture_03002A08.push(...data["actors/explosion/explosion_4.rgba16.png"].data)
+    explosion_seg3_texture_03003208.push(...data["actors/explosion/explosion_5.rgba16.png"].data)
+    explosion_seg3_texture_03003A08.push(...data["actors/explosion/explosion_6.rgba16.png"].data)
+
+    smoke_seg4_texture_0401DEA0.push(...data["actors/walk_smoke/walk_smoke_0.ia16.png"].data)
+    smoke_seg4_texture_0401E6A0.push(...data["actors/walk_smoke/walk_smoke_1.ia16.png"].data)
+    smoke_seg4_texture_0401EEA0.push(...data["actors/walk_smoke/walk_smoke_2.ia16.png"].data)
+    smoke_seg4_texture_0401F6A0.push(...data["actors/walk_smoke/walk_smoke_3.ia16.png"].data)
+    smoke_seg4_texture_0401FEA0.push(...data["actors/walk_smoke/walk_smoke_4.ia16.png"].data)
+    smoke_seg4_texture_040206A0.push(...data["actors/walk_smoke/walk_smoke_5.ia16.png"].data)
+    smoke_seg4_texture_04020EA0.push(...data["actors/walk_smoke/walk_smoke_6.ia16.png"].data)
+
+    chain_ball_seg6_texture_06020AE8.push(...data["actors/chain_ball/chain_ball.rgba16.png"].data)
+
+    chain_chomp_seg6_texture_060213D0.push(...data["actors/chain_chomp/chain_chomp_bright_shine.rgba16.png"].data)
+    chain_chomp_seg6_texture_06021BD0.push(...data["actors/chain_chomp/chain_chomp_dull_shine.rgba16.png"].data)
+    chain_chomp_seg6_texture_060223D0.push(...data["actors/chain_chomp/chain_chomp_tongue.rgba16.png"].data)
+    chain_chomp_seg6_texture_06022BD0.push(...data["actors/chain_chomp/chain_chomp_tooth.rgba16.png"].data)
+    chain_chomp_seg6_texture_060233D0.push(...data["actors/chain_chomp/chain_chomp_eye.rgba16.png"].data)
+
+    poundable_pole_seg6_texture_06001050.push(...data["actors/poundable_pole/poundable_pole_top.rgba16.png"].data)
+    poundable_pole_seg6_texture_06001850.push(...data["actors/poundable_pole/poundable_pole_side.rgba16.png"].data)
+
+    dirt_seg3_texture_0302BDF8.push(...data["actors/dirt/dirt_particle.rgba16.png"].data)
+
+    mist_seg3_texture_03000080.push(...data["actors/mist/mist.ia16.png"].data)
+
     SkyboxWater.water_skybox_texture_00000.push(...data["water_skybox_texture_00000"].data)
     SkyboxWater.water_skybox_texture_00001.push(...data["water_skybox_texture_00001"].data)
     SkyboxWater.water_skybox_texture_00002.push(...data["water_skybox_texture_00002"].data)
@@ -475,14 +567,11 @@ export const checkForRom = () => {   /// happens one time when the page is loade
     if (url.searchParams.get("romExternal") && !loadedGameAssets) {
         msgElement.innerHTML = "Transfering ROM Data..."
         msgElement.style = "color:yellow"
-        $.ajax({
-            url: '/romTransfer',
-            type: 'GET',
-            dataType: 'json',
-            data: { romExternal: url.searchParams.get("romExternal") },
-            success: (extractedData) => { processExtractedResults(extractedData) }
-        })
+        //TODO transfer ROM to client and extract
+        ///extractAssetsFromRom and url.searchParams.get("romExternal")
+        throw "temporarily unsupported"
     }
+
 
     return loadedGameAssets
 }
