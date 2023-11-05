@@ -25,7 +25,8 @@
     "build": "webpack --mode production",
     "start": "webpack-dev-server --host 0.0.0.0 --disable-host-check  --mode development",
     "protoc": "protoc --js_out=import_style=commonjs,binary:. proto/mario.proto",
-    "php": "php -S localhost:9300"
+    "php": "php -S localhost:9300",
+    "php2": "php -S localhost:9208",
   },
   "babel": {
     "presets": [
