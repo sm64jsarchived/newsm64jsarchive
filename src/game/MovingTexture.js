@@ -3,6 +3,7 @@ import { ObjectListProcessorInstance as ObjectListProc } from "./ObjectListProce
 import { castle_grounds_movtex_water, castle_grounds_movtex_tris_waterfall, castle_grounds_dl_waterfall } from "../levels/castle_grounds/areas/1/movtext.inc"
 import { ccm_movtex_penguin_puddle_water } from "../levels/ccm/areas/1/movtext.inc"
 import { wf_movtex_water } from "../levels/wf/areas/1/movtext.inc"
+import { dolphin_movtex_water } from "../levels/dolphin/areas/1/movtext.inc"
 import { GeoLayoutInstance as GeoLayout } from "../engine/GeoLayout"
 import * as Gbi from "../include/gbi"
 import { dl_waterbox_rgba16_begin, dl_waterbox_end, dl_draw_quad_verts_0123, texture_waterbox_water, texture_waterbox_lava } from "../common_gfx/segment2"
@@ -13,6 +14,7 @@ import { make_vertex } from "./GeoMisc"
 const MOVTEX_VTX_COLOR_DEFAULT = 0 // no tint (white vertex colors)
 const MOVTEX_VTX_COLOR_YELLOW = 1  // used for Hazy Maze Cave toxic haze
 const MOVTEX_VTX_COLOR_RED = 2     // used for Shifting Sand Land around the Tox box maze
+
 
 
 // First entry in array is texture movement speed for both layouts
@@ -59,6 +61,7 @@ const MOVTEX_AREA_TTM = (0x36 << 8)
 
 // Quad collections
 const BBH_MOVTEX_MERRY_GO_ROUND_WATER_ENTRANCE = (0 | MOVTEX_AREA_BBH)
+const MOVTEX_AREA_DOLPHIN = (0x38 << 8)
 const BBH_MOVTEX_MERRY_GO_ROUND_WATER_SIDE = (1 | MOVTEX_AREA_BBH)
 const CCM_MOVTEX_PENGUIN_PUDDLE_WATER = (1 | MOVTEX_AREA_CCM)
 const INSIDE_CASTLE_MOVTEX_GREEN_ROOM_WATER = (0 | MOVTEX_AREA_INSIDE_CASTLE)
@@ -85,6 +88,7 @@ const TTM_MOVTEX_PUDDLE = (1 | MOVTEX_AREA_TTM)
 
 // Non-colored, unique movtex meshes (drawn in level geo)
 const MOVTEX_PYRAMID_SAND_PATHWAY_FRONT = (1 | MOVTEX_AREA_SSL)
+const DOLPHIN_MOVTEX_WATER = (1 | MOVTEX_AREA_DOLPHIN)
 const MOVTEX_PYRAMID_SAND_PATHWAY_FLOOR = (2 | MOVTEX_AREA_SSL)
 const MOVTEX_PYRAMID_SAND_PATHWAY_SIDE = (3 | MOVTEX_AREA_SSL)
 const MOVTEX_CASTLE_WATERFALL = (1 | MOVTEX_AREA_CASTLE_GROUNDS)
@@ -124,6 +128,12 @@ const get_quad_collection_from_id = (id) => {
         case WF_MOVTEX_WATER:
             return wf_movtex_water
         default: throw "unknown case - get quad collection from id"
+        return wf_movtex_water
+        case GJ_MOVTEX_WATER:
+            return gj_movtex_water
+        case DOLPHIN_MOVTEX_WATER:
+            return dolphin_movtex_water
+        
     }
 }
 

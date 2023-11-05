@@ -1,7 +1,10 @@
 import * as Mario from "./Mario"
+import * as MarioConstants from "../include/mario_constants"
 import { perform_air_step, mario_bonk_reflection } from "./MarioStep"
 import { approach_number, atan2s } from "../engine/math_util"
 import { oMarioSteepJumpYaw } from "../include/object_constants"
+import { CameraInstance as Camera } from "./Camera"
+
 
 const update_air_without_turn = (m) => {
     let sidewaysSpeed = 0.0
@@ -49,9 +52,14 @@ const update_air_with_turn = (m) => {
             if (intendedDYaw < -32768) intendedDYaw += 65536
             intendedMag = m.intendedMag / 32.0;
 
+            if (m.parachuting) intendedMag *= 3.0
+
             m.forwardVel += 1.5 * Math.cos(intendedDYaw / 0x8000 * Math.PI) * intendedMag;
             m.faceAngle[1] += Math.floor(512.0 * Math.sin(intendedDYaw / 0x8000 * Math.PI) * intendedMag)
         }
+
+        if (m.parachuting && m.forwardVel > 65.0) m.forwardVel = 65.0
+
 
         //! Uncapped air speed. Net positive when moving forward.
         if (m.forwardVel > dragThreshold) {
@@ -88,7 +96,7 @@ const act_butt_slide_air = (m) => {
             if (m.vel[1] > 0.0) {
                 m.vel[1] = 0.0;
             }
-            m.particleFlags |= Mario.PARTICLE_VERTICAL_STAR;
+            m.particleFlags |= MarioConstants.PARTICLE_VERTICAL_STAR;
             Mario.set_mario_action(m, Mario.ACT_BACKWARD_AIR_KB, 0);
             break;
 
@@ -104,7 +112,8 @@ const act_butt_slide_air = (m) => {
 const common_air_action_step = (m, landAction, animation, stepArg) => {
 
     ///TODO add this, this moves mario slightly while in air by joystick
-    update_air_without_turn(m)
+    if (m.parachuting) update_air_with_turn(m)
+     else update_air_without_turn(m)
 
     const stepResult = perform_air_step(m, stepArg)
 
@@ -125,7 +134,7 @@ const common_air_action_step = (m, landAction, animation, stepArg) => {
                     if (m.vel[1] > 0) m.vel[1] = 0
 
 /*                    if (m.forwardVel >= 38.0) {
-                        m.particleFlags |= Mario.PARTICLE_VERTICAL_STAR
+                        m.particleFlags |= MarioConstants.PARTICLE_VERTICAL_STAR
                         Mario.set_mario_action(m, Mario.ACT_BACKWARD_AIR_KB)
                     } else {
                         if (m.forwardVel > 8.0) Mario.set_forward_vel(m, -8.0)
@@ -247,7 +256,7 @@ const act_freefall = (m) => {
         case 0: animation = Mario.MARIO_ANIM_GENERAL_FALL; break
         case 1: animation = Mario.MARIO_ANIM_FALL_FROM_SLIDE; break
         case 2: animation = Mario.MARIO_ANIM_FALL_FROM_SLIDE_KICK; break
-        default: throw "act freefall unknown action arg"
+        default: throw "act freefall unknown action arg: " + m.actionArg
     }
 
     common_air_action_step(m, Mario.ACT_FREEFALL_LAND, animation, Mario.AIR_STEP_CHECK_LEDGE_GRAB)
@@ -371,7 +380,7 @@ const act_dive = (m) => {
                 mario_bonk_reflection(m, true)
                 m.faceAngle[0] = 0
                 if (m.vel[1] > 0.0) m.vel[1] = 0.0
-                m.particleFlags |= Mario.PARTICLE_VERTICAL_STAR
+                m.particleFlags |= MarioConstants.PARTICLE_VERTICAL_STAR
                 Mario.drop_and_set_mario_action(m, Mario.ACT_BACKWARD_AIR_KB, 0)
             }
 
@@ -561,7 +570,7 @@ const act_slide_kick = (m) => {
         case Mario.AIR_STEP_HIT_WALL:
             if (m.wall) {
                 if (m.vel[1] > 0) m.vel[1] = 0
-                m.particleFlags |= Mario.PARTICLE_VERTICAL_STAR
+                m.particleFlags |= MarioConstants.PARTICLE_VERTICAL_STAR
                 Mario.set_mario_action(m, Mario.ACT_BACKWARD_AIR_KB, 0)
             }
             break
@@ -605,14 +614,19 @@ const act_ground_pound = (m) => {
 
         const stepResult = perform_air_step(m, 0)
         if (stepResult == Mario.AIR_STEP_LANDED) {
+            /// TODO get stuck in ground
             //play heave landed sound
-            m.particleFlags |= Mario.PARTICLE_MIST_CIRCLE | Mario.PARTICLE_HORIZONTAL_STAR
+
+
+            m.particleFlags |= MarioConstants.PARTICLE_MIST_CIRCLE | MarioConstants.PARTICLE_HORIZONTAL_STAR
             Mario.set_mario_action(m, Mario.ACT_GROUND_POUND_LAND, 0)
+
+            Camera.set_camera_shake_from_hit(Camera.SHAKE_GROUND_POUND)
         } else if (stepResult == Mario.AIR_STEP_HIT_WALL) {
             if (m.wall) {
                 if (m.vel[1] > 0.0) m.vel[1] = 0.0
 
-                m.particleFlags |= Mario.PARTICLE_VERTICAL_STAR
+                m.particleFlags |= MarioConstants.PARTICLE_VERTICAL_STAR
                 Mario.set_mario_action(m, Mario.ACT_BACKWARD_AIR_KB, 0)
             }
         }
@@ -635,7 +649,7 @@ const act_air_hit_wall = (m) => {
             m.vel[1] = 0.0
         }
 
-        m.particleFlags |= Mario.PARTICLE_VERTICAL_STAR
+        m.particleFlags |= MarioConstants.PARTICLE_VERTICAL_STAR
         return Mario.set_mario_action(m, Mario.ACT_BACKWARD_AIR_KB, 0) 
     } else {
         m.wallKickTimer = 5

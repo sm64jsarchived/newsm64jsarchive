@@ -5,6 +5,9 @@ import { ceil } from "mathjs"
 import { SURFACE_HANGABLE } from "../include/surface_terrains"
 
 const should_strengthen_gravity_for_jump_ascent = (m) => {
+
+    if (!(m.flags & Mario.MARIO_UNKNOWN_08)) return false
+
     if (!(m.input & Mario.INPUT_A_DOWN) && m.vel[1] > 20.0) {
         return (m.action & Mario.ACT_FLAG_CONTROL_JUMP_HEIGHT) != 0
     }
@@ -13,6 +16,7 @@ const should_strengthen_gravity_for_jump_ascent = (m) => {
 }
 
 const apply_gravity = (m) => {
+
     if (m.action == Mario.ACT_LONG_JUMP || m.action == Mario.ACT_SLIDE_KICK || m.action == Mario.ACT_BBH_ENTER_SPIN) {
         m.vel[1] -= 2.0
         if (m.vel[1] < -75.0) {
@@ -24,6 +28,9 @@ const apply_gravity = (m) => {
     } else {
         m.vel[1] -= 4.0
         if (m.vel[1] < -75.0) m.vel[1] = -75.0
+        if (m.parachuting && m.action != Mario.ACT_GROUND_POUND) {
+            if (m.vel[1] < -30.0) m.vel[1] = -30.0
+        }
     }
 }
 
@@ -208,6 +215,8 @@ export const perform_air_step = (m, stepArg) => {
 
     m.marioObj.header.gfx.pos = [...m.pos]
     m.marioObj.header.gfx.angle = [0, m.faceAngle[1], 0]
+
+    if (Mario.AIR_STEP_NONE != stepResult && m.parachuting) m.parachuting = false
 
     return stepResult
 }

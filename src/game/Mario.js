@@ -18,7 +18,7 @@ import { mario_execute_automatic_action } from "./MarioActionsAutomatic"
 import { mario_execute_cutscene_action } from "./MarioActionsCutscene"
 import { gameData as socketGameData } from "../socket"
 import { int16, sins, coss } from "../utils"
-import { LEVEL_CCM, LEVEL_TTM, LEVEL_WF } from "../levels/level_defines_constants"
+import { LEVEL_CCM, LEVEL_TTM, LEVEL_WF, LEVEL_CTF00 } from "../levels/level_defines_constants"
 
 ////// Mario Constants
 export const ANIM_FLAG_NOLOOP = (1 << 0) // 0x01
@@ -132,6 +132,8 @@ export const MARIO_ANIM_STAND_AGAINST_WALL = 0x7E
 export const MARIO_ANIM_PUSHING = 0x6C
 export const MARIO_ANIM_SIDESTEP_LEFT = 0x7F
 export const MARIO_ANIM_SIDESTEP_RIGHT = 0x80
+export const MARIO_ANIM_CREDITS_WAVING = 0x1D
+export const MARIO_ANIM_STAR_DANCE = 0xCD
 
 export const MARIO_NORMAL_CAP = 0x00000001
 export const MARIO_VANISH_CAP = 0x00000002
@@ -163,7 +165,6 @@ export const ACT_GROUP_SUBMERGED = (3 << 6)
 export const ACT_GROUP_CUTSCENE = (4 << 6)
 export const ACT_GROUP_AUTOMATIC = (5 << 6)
 export const ACT_GROUP_OBJECT = (6 << 6)
-
 export const ACT_IDLE = 0x0C400201
 export const ACT_WALKING = 0x04000440
 export const ACT_DECELERATING = 0x0400044A
@@ -296,6 +297,7 @@ export const ACT_FLAG_PAUSE_EXIT = (1 << 27)
 export const ACT_FLAG_SWIMMING_OR_FLYING = (1 << 28)
 export const ACT_FLAG_WATER_OR_TEXT = (1 << 29)
 export const ACT_FLAG_THROWING = (1 << 31)
+export const ACT_TAUNT = (0x193 | ACT_FLAG_STATIONARY | ACT_FLAG_IDLE)
 
 export const INPUT_NONZERO_ANALOG = 0x0001
 export const INPUT_A_PRESSED = 0x0002
@@ -313,33 +315,13 @@ export const INPUT_UNKNOWN_12 = 0x1000
 export const INPUT_B_PRESSED = 0x2000
 export const INPUT_Z_DOWN = 0x4000
 export const INPUT_Z_PRESSED = 0x8000
+export const INPUT_TAUNT = 0x10000
 
 export const GROUND_STEP_LEFT_GROUND = 0
 export const GROUND_STEP_NONE = 1
 export const GROUND_STEP_HIT_WALL = 2
 export const GROUND_STEP_HIT_WALL_STOP_QSTEPS = 2
 export const GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS = 3
-
-export const PARTICLE_DUST                 /* 0x00000001 */ = (1 << 0)
-export const PARTICLE_VERTICAL_STAR        /* 0x00000002 */ = (1 << 1)
-export const PARTICLE_2                    /* 0x00000004 */ = (1 << 2)
-export const PARTICLE_SPARKLES             /* 0x00000008 */ = (1 << 3)
-export const PARTICLE_HORIZONTAL_STAR      /* 0x00000010 */ = (1 << 4)
-export const PARTICLE_BUBBLE               /* 0x00000020 */ = (1 << 5)
-export const PARTICLE_WATER_SPLASH         /* 0x00000040 */ = (1 << 6)
-export const PARTICLE_IDLE_WATER_WAVE      /* 0x00000080 */ = (1 << 7)
-export const PARTICLE_SHALLOW_WATER_WAVE   /* 0x00000100 */ = (1 << 8)
-export const PARTICLE_PLUNGE_BUBBLE        /* 0x00000200 */ = (1 << 9)
-export const PARTICLE_WAVE_TRAIL           /* 0x00000400 */ = (1 << 10)
-export const PARTICLE_FIRE                 /* 0x00000800 */ = (1 << 11)
-export const PARTICLE_SHALLOW_WATER_SPLASH /* 0x00001000 */ = (1 << 12)
-export const PARTICLE_LEAF                 /* 0x00002000 */ = (1 << 13)
-export const PARTICLE_SNOW                 /* 0x00004000 */ = (1 << 14)
-export const PARTICLE_DIRT                 /* 0x00008000 */ = (1 << 15)
-export const PARTICLE_MIST_CIRCLE          /* 0x00010000 */ = (1 << 16)
-export const PARTICLE_BREATH               /* 0x00020000 */ = (1 << 17)
-export const PARTICLE_TRIANGLE             /* 0x00040000 */ = (1 << 18)
-export const PARTICLE_19                   /* 0x00080000 */ = (1 << 19)
 
 export const sJumpLandAction = {
     numFrames: 4,
@@ -442,7 +424,8 @@ export const init_marios = () => {
         pos: [ ...Area.gMarioSpawnInfo.startPos ],
         vel: [0, 0, 0],
         action: ACT_IDLE,
-        controller: { stickX: 0, stickY: 0, stickMag: 0 }
+        controller: { stickX: 0, stickY: 0, stickMag: 0 },
+        parachuting: Area.gMarioSpawnInfo.parachuteSpawn
     })
 
     Object.assign(LevelUpdate.gMarioState.marioObj.header.gfx, {
@@ -709,14 +692,15 @@ export const set_mario_action_moving = (m, action, actionArg) => {
     return action
 }
 
-export const set_mario_animation = (m, targetAnimID) => {
+export const set_mario_animation = (m, targetAnimID, reset) => {
 
     const o = m.marioObj
     m.animation.targetAnim = gMarioAnimData[targetAnimID]
 
     if (m.animation.targetAnim == undefined) throw "cant find animation"
 
-    if (o.header.gfx.unk38.animID != targetAnimID) {
+
+    if (o.header.gfx.unk38.animID != targetAnimID || reset) {
         o.header.gfx.unk38.animID = targetAnimID
         o.header.gfx.unk38.curAnim = m.animation.targetAnim
         o.header.gfx.unk38.animAccel = 0
@@ -732,7 +716,6 @@ export const set_mario_animation = (m, targetAnimID) => {
             }
         }
     }
-
     return o.header.gfx.unk38.animFrame
 
 }
@@ -867,6 +850,8 @@ export const execute_mario_action = (m) => {
         update_mario_info_for_cam(m)
 
         m.marioObj.rawData[oInteractStatus] = 0
+
+        return m.particleFlags
     }
 }
 
@@ -914,7 +899,11 @@ const warp_death_plane = (m) => {
             if (m.pos[1] <= -7230.0) m.pos = [102, -4332, 5734]
             break
         }
-        case (LEVEL_WF): { // TTM
+        case (LEVEL_CTF00): { // CTF00
+            if (m.pos[1] <= -6500.0) m.pos = [0, 3461, 0]
+            break
+        }
+        case (LEVEL_WF): { // WF
             if (m.pos[1] <= -2000.0) m.pos = [2600, 1256, 5120]
             break
         }
@@ -937,7 +926,7 @@ const update_mario_geometry_inputs = (m) => {
     }
 
     m.ceilHeight = vec3_find_ceil(m.pos, m.floorHeight, m)
-    m.waterLevel = -20000.0 //find_water_level(m->pos[0], m->pos[2]);
+    m.waterLevel = SurfaceCollision.find_water_level(m.pos[0], m.pos[2])
 
     if (!m.floor) { /// still no floor - short term fix?
         m.floor = m.old_floor
@@ -971,6 +960,13 @@ const update_mario_geometry_inputs = (m) => {
 
     } else {
         m.input |= INPUT_OFF_FLOOR;
+    }
+
+    /// bouncepad
+    if (m.floor.type == 0x0004 && !(m.input & INPUT_OFF_FLOOR)) {
+        set_mario_action(m, ACT_FREEFALL, 0)
+        m.vel[1] = 200
+        m.parachuting = true
     }
 
     warp_death_plane(m)
@@ -1173,7 +1169,8 @@ export const resolve_and_return_wall_collisions = (pos, offset, radius) => {
     const collisionData = {
         radius,
         offsetY: offset,
-        x: pos[0], y: pos[1], z: pos[2]
+        x: pos[0], y: pos[1], z: pos[2],
+        walls: []
     }
 
     let wall
@@ -1194,10 +1191,11 @@ const update_mario_inputs = (m) => {
     m.input = 0
     m.collidedObjInteractTypes = m.marioObj.collidedObjInteractTypes
     m.flags &= 0xFFFFFF
-
     update_mario_joystick_inputs(m)
-    update_mario_button_inputs(m)
+    update_mario_button_inputs(m) 
     update_mario_geometry_inputs(m)
+
+    if (m.controller.taunt && (m.action == ACT_IDLE || m.action == ACT_TAUNT)) m.input |= INPUT_TAUNT
 
     if (Camera.gCameraMovementFlags & Camera.CAM_MOVE_C_UP_MODE) {
         if (m.action & ACT_FLAG_ALLOW_FIRST_PERSON) {
