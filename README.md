@@ -1,7 +1,8 @@
-# sm64js
+# sm64jsarchive
 
 ### Links
-[Main Website: sm64js.com](https://sm64js.com)
+[Original Website: sm64js.com](https://sm64js.com)
+[Main Website: [NOT RELEASED YET](https://github.com/404)
 
 [Discord Server](https://discord.gg/7UaDnJt)
 
